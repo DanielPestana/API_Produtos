@@ -15,7 +15,6 @@ namespace Api.Service.Test.Product
 
         private Mock<IProductService> _serviceMock;
 
-
         [Fact]
         public async Task E_Possivel_Executar_Metodo_GetAll()
         {

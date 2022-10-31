@@ -21,6 +21,8 @@ namespace Api.Application.Controllers
         {
             _service = service;
         }
+
+
         [HttpGet]
         [Route("paginado/{page}")]
         public async Task<ActionResult> GetAll([FromRoute] int page = 1)

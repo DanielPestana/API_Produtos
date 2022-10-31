@@ -24,8 +24,29 @@ namespace Api.Service.Services
             _mapper = mapper;
         }
 
+        public bool validaFabricacao(DateTime? fabricacao, DateTime? validade)
+        {
+            if (fabricacao.HasValue && validade.HasValue)
+            {
+                DateTime fabricacaoManipulada = fabricacao ?? DateTime.UtcNow;
+                DateTime validadeManipulada = validade ?? DateTime.UtcNow;
+                var result = DateTime.Compare(fabricacaoManipulada, validadeManipulada);
+                if (result > 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public async Task<ProductDtoCreateResult> Create(ProductDtoCreate product)
         {
+
+            if (!validaFabricacao(product.DateFabrication, product.DateExpiry))
+            {
+                throw new Exception("Data de validade não pode ser menor que a data de fabricação.");
+            }
+
             var model = _mapper.Map<ProductModel>(product);
             var entity = _mapper.Map<ProductEntity>(model);
             var result = await _repository.InsertAsync(entity);
@@ -34,6 +55,11 @@ namespace Api.Service.Services
 
         public async Task<ProductDtoUpdateResult> Update(ProductDtoUpdate product)
         {
+
+            if (!validaFabricacao(product.DateFabrication, product.DateExpiry))
+            {
+                throw new Exception("Data de validade não pode ser menor que a data de fabricação.");
+            }
             var model = _mapper.Map<ProductModel>(product);
             var entity = _mapper.Map<ProductEntity>(model);
             var result = await _repository.UpdateAsync(entity);
@@ -56,7 +82,6 @@ namespace Api.Service.Services
             var entity = await _repository.SelectAsync(code);
             return _mapper.Map<ProductDto>(entity);
         }
-
 
     }
 }
